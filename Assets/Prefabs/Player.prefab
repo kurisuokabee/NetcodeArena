@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8900160037939508125}
   - component: {fileID: 1368898871309436407}
   - component: {fileID: 7811932833385834870}
+  - component: {fileID: 6416175314883259653}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -244,3 +245,22 @@ MonoBehaviour:
   moveSpeed: 5
   gravity: -20
   groundedGravity: -2
+--- !u!114 &6416175314883259653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8716936993220158358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6935f65379f2054c85492f428c739a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerColorManager
+  ShowTopMostFoldoutHeaderGroup: 1
+  playerRenderer: {fileID: 2935595916220710}
+  playerMaterials:
+  - {fileID: 2100000, guid: 9b69390af867ba64e8582e1fdbf63f2f, type: 2}
+  - {fileID: 2100000, guid: 36676d5772c44774b8679345bfe8cc81, type: 2}
+  - {fileID: 2100000, guid: 579e3575f3f74384280af8b62657c970, type: 2}
+  - {fileID: 2100000, guid: 55ea2e33acc07224e9de65285609d155, type: 2}

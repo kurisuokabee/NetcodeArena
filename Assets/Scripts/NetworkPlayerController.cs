@@ -10,9 +10,18 @@ public class NetworkPlayerController : NetworkBehaviour
     private CharacterController characterController;
     private float verticalVelocity;
 
+    TopDownCamera cam; 
+        
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+    }
+
+    void Start()
+    {   
+        cam = Camera.main.GetComponent<TopDownCamera>();
+        cam.SetFollowTarget(transform);
     }
 
     private void Update()

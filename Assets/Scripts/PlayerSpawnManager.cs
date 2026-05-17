@@ -13,7 +13,7 @@ public class PlayerSpawnManager : NetworkBehaviour
         }
 
         GameObject[] spawnPointObjects = GameObject.FindGameObjectsWithTag("SpawnPoint");
-
+        
         if (spawnPointObjects.Length == 0)
         {
             Debug.LogWarning("No objects with the SpawnPoint tag were found.");
