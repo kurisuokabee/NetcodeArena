@@ -12,8 +12,13 @@ public class PlayerSpawnManager : NetworkBehaviour
             return;
         }
 
+        Spawn();
+    }
+
+    public void Spawn()
+    {
         GameObject[] spawnPointObjects = GameObject.FindGameObjectsWithTag("SpawnPoint");
-        
+
         if (spawnPointObjects.Length == 0)
         {
             Debug.LogWarning("No objects with the SpawnPoint tag were found.");
@@ -29,8 +34,7 @@ public class PlayerSpawnManager : NetworkBehaviour
             characterController.enabled = false;
         }
 
-        transform.position = selectedSpawnPoint.position;
-        transform.rotation = selectedSpawnPoint.rotation;
+        transform.SetPositionAndRotation(selectedSpawnPoint.position, selectedSpawnPoint.rotation);
 
         if (characterController != null)
         {
