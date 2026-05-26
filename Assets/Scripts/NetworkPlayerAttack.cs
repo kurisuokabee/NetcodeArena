@@ -3,10 +3,15 @@ using Unity.Netcode;
 public class NetworkPlayerAttack : NetworkBehaviour
 {
     [SerializeField] float attackRange = 5f;
-    [SerializeField] int damage = 25;
+    int damage;
     [SerializeField] LayerMask playerLayer;
-    [SerializeField] KeyCode playerAttackKey = KeyCode.Space;
+    [SerializeField] KeyCode playerAttackKey = KeyCode.Mouse0;
+    ObjectPooler objectPooler;
 
+    void Start()
+    {
+        objectPooler = ObjectPooler.instance;
+    }
     private void Update()
     {   
         if(!IsOwner) return;
@@ -29,13 +34,30 @@ public class NetworkPlayerAttack : NetworkBehaviour
 
             NetworkPlayerHealth playerHealth = hit.GetComponent<NetworkPlayerHealth>();
 
+            damage = Random.Range(10, 25);
+
             if (playerHealth != null)
-            {
+            {   
                 playerHealth.TakeDamage(damage);
+
+                ShowDamageClientRpc(damage, playerHealth.transform.position + new Vector3(
+                Random.Range(-0.5f, 0.5f),
+                2,
+                0f));
+
                 break;
             }
         }
 
+    }
+
+    [ClientRpc]
+    void ShowDamageClientRpc(int damage, Vector3 position)
+    {
+        var damageText = ObjectPooler.instance.Get();
+
+        damageText.transform.position = position;
+        damageText.Show(damage);
     }
 
     private void OnDrawGizmos()

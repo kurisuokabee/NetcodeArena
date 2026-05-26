@@ -6,22 +6,16 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float gravity = -20f;
     [SerializeField] private float groundedGravity = -2f;
+    [SerializeField] private float jumpForce = 8f;
 
     private CharacterController characterController;
     private float verticalVelocity;
 
-    TopDownCamera cam; 
-        
+
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-    }
-
-    void Start()
-    {   
-        cam = Camera.main.GetComponent<TopDownCamera>();
-        cam.SetFollowTarget(transform);
     }
 
     private void Update()
@@ -36,34 +30,50 @@ public class NetworkPlayerController : NetworkBehaviour
 
         Vector2 movementInput = new Vector2(horizontalInput, verticalInput);
 
+        bool jumpPressed = Input.GetButtonDown("Jump");
+
         if (IsServer)
         {
-            MovePlayer(movementInput);
+            MovePlayer(movementInput, jumpPressed);
         }
         else
         {
-            MovePlayerRpc(movementInput);
+            MovePlayerRpc(movementInput, jumpPressed);
         }
     }
 
     [Rpc(SendTo.Server)]
-    private void MovePlayerRpc(Vector2 movementInput)
+    private void MovePlayerRpc(Vector2 movementInput, bool jumpPressed)
     {
-        MovePlayer(movementInput);
+        MovePlayer(movementInput, jumpPressed);
     }
 
-    private void MovePlayer(Vector2 movementInput)
+    private void MovePlayer(Vector2 movementInput, bool jumpPressed)
     {
-        if (characterController.isGrounded && verticalVelocity < 0f)
+        if (characterController.isGrounded)
         {
-            verticalVelocity = groundedGravity;
+            if (verticalVelocity < 0f)
+            {
+                verticalVelocity = groundedGravity;
+            }
+
+            
+            if (jumpPressed)
+            {
+                verticalVelocity = jumpForce;
+            }
         }
         else
         {
+            // Apply gravity
             verticalVelocity += gravity * Time.deltaTime;
         }
 
-        Vector3 moveDirection = new Vector3(movementInput.x, 0f, movementInput.y).normalized;
+        Vector3 moveDirection = new Vector3(
+            movementInput.x,
+            0f,
+            movementInput.y
+        ).normalized;
 
         Vector3 horizontalMovement = moveDirection * moveSpeed;
 

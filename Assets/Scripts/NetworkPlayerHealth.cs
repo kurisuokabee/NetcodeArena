@@ -1,8 +1,11 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
+
 public class NetworkPlayerHealth : NetworkBehaviour
 {
     [SerializeField] int maxHealth = 100;
+    [SerializeField] private Slider healthBar;
     public NetworkVariable<int> currentHealth = new(
         100,
         NetworkVariableReadPermission.Everyone,
@@ -10,7 +13,7 @@ public class NetworkPlayerHealth : NetworkBehaviour
         );
 
     PlayerSpawnManager spawnManager;
-
+    
 
     public override void OnNetworkSpawn()
     {
@@ -20,8 +23,12 @@ public class NetworkPlayerHealth : NetworkBehaviour
         }
 
         spawnManager = GetComponent<PlayerSpawnManager>();
+        
 
         currentHealth.OnValueChanged += OnHealthChange;
+
+        SetupHealthBar();
+        UpdateHealthBarClientRpc(currentHealth.Value);
     }
 
     public override void OnNetworkDespawn()
@@ -30,10 +37,26 @@ public class NetworkPlayerHealth : NetworkBehaviour
     }
 
    
-
     void OnHealthChange(int previousHP, int newHP)
     {
         Debug.Log($"{gameObject.name} health Change: {previousHP} -> {newHP}");
+    }
+    void SetupHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.maxValue = maxHealth;
+            healthBar.value = currentHealth.Value;
+        }
+    }
+
+    [ClientRpc]
+    void UpdateHealthBarClientRpc(int health)
+    {
+        if (healthBar != null)
+        {
+            healthBar.value = health;
+        }
     }
 
     public void TakeDamage(int damage)
@@ -43,6 +66,7 @@ public class NetworkPlayerHealth : NetworkBehaviour
         currentHealth.Value -= damage;
 
         currentHealth.Value = Mathf.Clamp(currentHealth.Value, 0, maxHealth);
+        UpdateHealthBarClientRpc(currentHealth.Value);
 
         if (currentHealth.Value <= 0) Respawn();
     }
@@ -50,6 +74,7 @@ public class NetworkPlayerHealth : NetworkBehaviour
     public void Respawn()
     {
         currentHealth.Value = maxHealth;
+        UpdateHealthBarClientRpc(currentHealth.Value);
         spawnManager.Spawn();
     }
 }
